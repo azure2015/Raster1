@@ -14,27 +14,33 @@ init:
 waitframe:
        cmp.b  #$ff,$dff006
        bne    waitframe
-       add    d6,d7            
-       cmp.b  #$f0,d7
-       blo    bottom
-       neg    d6
-bottom:
-       cmp.b #$40,d7
-       bhi   wait1
-       neg   d6
+
 wait1:
+       move.w (pos_low),d7
        cmp.b  $dff006,d7
        bne    wait1
        move.w #$fff,$dff180
-   ;    add    #1,d7
+       add    d6,d7
+       move.w d7,(pos_low)
 wait2:
-     
+       move.w (pos_high),d7
        cmp.b  $dff006,d7
        bne    wait2
        move.w #$000,$dff180
+       add    d6,d7
+       move.w d7,(pos_high)
 
+       cmp    #$f0,d7
+       blo    down
+       neg    d6
+down
+       cmp    #$40,d7
+       bhi    up 
+       neg    d6
+up
        btst #6,$bfe001
        bne  waitframe
        rts
 
-pos    dc.w   $ac
+pos_low    dc.w   $ac
+pos_high   dc.w   $ad
